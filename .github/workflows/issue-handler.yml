@@ -1,15 +1,21 @@
-name: Auto-label issues
+name: Auto-update Department Field
 
 on:
   issues:
-    types: [opened]
+    types: [opened, edited]
 
 jobs:
-  add-label:
+  update-department-field:
     runs-on: ubuntu-latest
     steps:
-      - name: Add label to issue
-        uses: actions-ecosystem/action-add-labels@v1
+      - name: Update Department Field based on issue label
+        uses: octokit/request-action@v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: PM
+          route: PATCH /projects/columns/cards/{card_id}
+          card_id: ${{ github.event.issue.id }}
+          content: |
+            {
+              "field": "department",
+              "value": "PM"
+            }
